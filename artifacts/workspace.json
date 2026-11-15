@@ -1,0 +1,17 @@
+{
+  "root": "/home/dev/feedback/uid19898",
+  "B": "/home/dev/feedback/uid19898",
+  "sha": "6d40f963fee940063e09956c7e60d073f4302259",
+  "wslDistro": "Ubuntu-26.04",
+  "source": {
+    "owner": "ibis-project",
+    "repo": "ibis",
+    "sha": "6d40f963fee940063e09956c7e60d073f4302259"
+  },
+  "fork": {
+    "owner": "Rrr119",
+    "repo": "ibis",
+    "cloneUrl": "https://github.com/Rrr119/ibis.git"
+  },
+  "at": "2026-11-15T05:06:12.777Z"
+}

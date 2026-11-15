@@ -98,14 +98,7 @@ with pytest.warns(FutureWarning, match="v9.0"):
             lambda t, win: t.float_col.lead().over(win),
             lambda t: t.float_col.shift(-1),
             id="lead",
-            marks=[
-                pytest.mark.notyet(
-                    ["clickhouse"],
-                    reason="upstream is broken; returns all nulls",
-                    raises=AssertionError,
-                ),
-                pytest.mark.notimpl(["druid"], raises=PyDruidProgrammingError),
-            ],
+            marks=pytest.mark.notimpl(["druid"], raises=PyDruidProgrammingError),
         ),
         param(
             lambda t, win: t.id.rank().over(win),
@@ -130,8 +123,8 @@ with pytest.warns(FutureWarning, match="v9.0"):
             id="percent_rank",
             marks=[
                 pytest.mark.notyet(
-                    ["clickhouse", "materialize"],
-                    reason="clickhouse doesn't implement percent_rank",
+                    ["materialize"],
+                    reason="Materialize doesn't support percent_rank",
                     raises=com.OperationNotDefinedError,
                 ),
                 pytest.mark.notimpl(
@@ -148,7 +141,7 @@ with pytest.warns(FutureWarning, match="v9.0"):
             id="cume_dist",
             marks=[
                 pytest.mark.notyet(
-                    ["clickhouse", "exasol", "singlestoredb", "materialize"],
+                    ["exasol", "singlestoredb", "materialize"],
                     raises=com.OperationNotDefinedError,
                 ),
                 pytest.mark.notimpl(
@@ -1032,17 +1025,11 @@ def test_grouped_bounded_range_window(backend, alltypes, df):
     backend.assert_series_equal(result.val, expected.val)
 
 
-@pytest.mark.notimpl(["clickhouse"], raises=com.OperationNotDefinedError)
 @pytest.mark.notyet(
     ["materialize"],
     raises=com.OperationNotDefinedError,
     reason="Materialize doesn't support percent_rank() window function",
     # See: https://materialize.com/docs/sql/functions/#window-functions
-)
-@pytest.mark.notyet(
-    ["clickhouse"],
-    reason="clickhouse doesn't implement percent_rank",
-    raises=com.OperationNotDefinedError,
 )
 @pytest.mark.notimpl(
     ["risingwave"],
@@ -1214,11 +1201,6 @@ def test_range_expression_bounds(backend):
     assert len(result) == con.execute(t.count())
 
 
-@pytest.mark.notyet(
-    ["clickhouse"],
-    reason="clickhouse doesn't implement percent_rank",
-    raises=com.OperationNotDefinedError,
-)
 @pytest.mark.never(
     ["mssql"], reason="lack of support for booleans", raises=PyODBCProgrammingError
 )

@@ -105,6 +105,27 @@ passing a properly-formatted ClickHouse connection URL to `ibis.connect`:
 con = ibis.connect(f"clickhouse://{user}:{password}@{host}:{port}?secure={secure}")
 ```
 
+## Window functions
+
+The ClickHouse backend supports Ibis's window function API, including:
+
+- Ranking and numbering functions: `rank`, `dense_rank`, `row_number`, and `ntile`
+- Distribution functions: `cume_dist` and `percent_rank`
+- Offset functions: `lag` and `lead` (including custom offsets and defaults)
+- Value functions: `first`, `last`, and `nth`
+- Aggregates over `ROWS` frames (bounded and unbounded) and numeric `RANGE` frames
+
+Window frames are translated to ClickHouse's `OVER` clause. `lag` and `lead`
+map to the frame-independent `lag`/`lead` functions, so their results are not
+constrained by the window frame and match the behavior of the other Ibis
+backends.
+
+::: {.callout-note}
+ClickHouse does not support interval-typed `RANGE` frames (for example
+`range=(-ibis.interval(seconds=10), 0)`); use a `ROWS` frame or an explicit
+time-based comparison instead.
+:::
+
 ## ClickHouse playground
 
 ClickHouse provides a free playground with several datasets that you can connect to using Ibis:

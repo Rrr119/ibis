@@ -48,8 +48,6 @@ class ClickHouseCompiler(SQLGlotCompiler):
 
     UNSUPPORTED_OPS = (
         ops.RowID,
-        ops.CumeDist,
-        ops.PercentRank,
         ops.Time,
         ops.TimeDelta,
         ops.StringToTimestamp,
@@ -606,10 +604,22 @@ class ClickHouseCompiler(SQLGlotCompiler):
         elif offset is not None:
             args.append(offset)
 
-        func = self.f[f"{type(op).__name__.lower()}InFrame"]
+        # ClickHouse's `lagInFrame`/`leadInFrame` are constrained by the
+        # window frame, so they return NULL whenever the target row falls
+        # outside of it (e.g. `lead` over a frame ending at the current row).
+        # The standard `lag`/`lead` functions ignore the frame bounds and
+        # always address the target row within the whole partition, matching
+        # ibis's (and the SQL standard's) semantics.
+        func = self.f[type(op).__name__.lower()]
         return func(*args)
 
     visit_Lag = visit_Lead = visit_LagLead
+
+    def visit_CumeDist(self, op):
+        return self.f.anon.cume_dist()
+
+    def visit_PercentRank(self, op):
+        return self.f.anon.percent_rank()
 
     def visit_ExtractFile(self, op, *, arg):
         return self.f.cutFragment(self.f.pathFull(arg))
